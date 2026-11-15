@@ -219,7 +219,9 @@ class Interpolator {
           value = makeString(value);
         }
         const safeValue = todo.safeValue(value);
-        str = str.replace(match[0], regexSafe(safeValue));
+        // Replace at the match itself: str.replace would hit the first copy of the
+        // placeholder, which may sit inside a value inserted earlier.
+        str = str.slice(0, match.index) + safeValue + str.slice(match.index + match[0].length);
         if (skipOnVariables) {
           todo.regex.lastIndex += safeValue.length;
           todo.regex.lastIndex -= match[0].length;
